@@ -1,0 +1,34 @@
+# FieldField Mod .gitignore
+# Only track our mod-specific files
+
+# Include our source scripts
+!Data/Scripts/Source/FieldField*.psc
+!Data/Scripts/Source/FieldFieldTestRunner.psc
+!Data/Scripts/Source/FieldFieldShipGraphTest.psc
+
+# Include our plugin
+!Data/FieldField.esp
+
+# Include our documentation
+!MOD_README.md
+!MOD_DESCRIPTION.txt
+!TESTING.md
+!.gitignore
+
+# Ignore compiled scripts
+Data/Scripts/*.pex
+
+# Ignore all other game files and directories
+*
+!Data/
+!Data/Scripts/
+!Data/Scripts/Source/
+!Data/Scripts/Source/FieldField*.psc
+!Data/Scripts/Source/FieldFieldTestRunner.psc
+!Data/Scripts/Source/FieldFieldShipGraphTest.psc
+!Data/FieldField.esp
+!MOD_README.md
+!MOD_DESCRIPTION.txt
+!TESTING.md
+!.gitignore
+
