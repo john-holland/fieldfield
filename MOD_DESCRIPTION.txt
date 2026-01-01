@@ -1,0 +1,28 @@
+FieldField Mod
+==============
+
+A custom modification for Starfield.
+
+WHAT IT DOES:
+-------------
+[Describe your mod's functionality here]
+
+INSTALLATION:
+-------------
+1. Copy the .esp file to your Starfield/Data/ folder
+2. Enable the mod in your mod manager
+3. Launch the game
+
+COMPATIBILITY:
+--------------
+- Compatible with Starfield base game
+- [List any known compatibility issues or requirements]
+
+KNOWN ISSUES:
+-------------
+- None at this time
+
+CREDITS:
+--------
+Created by [Your Name]
+
