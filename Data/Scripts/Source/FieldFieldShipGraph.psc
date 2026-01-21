@@ -94,13 +94,13 @@ Function BuildInteriorGraph(Cell shipCell)
 EndFunction
 
 ; Build exterior graph from worldspace
-Function BuildExteriorGraph(WorldSpace worldSpace, ObjectReference shipRef)
-    If worldSpace == None
+Function BuildExteriorGraph(WorldSpace akWorldSpace, ObjectReference shipRef)
+    If akWorldSpace == None
         Debug.Trace("FieldFieldShipGraph: Cannot build exterior graph - worldspace is None")
         Return
     EndIf
     
-    Debug.Trace("FieldFieldShipGraph: Building exterior graph for worldspace " + worldSpace)
+    Debug.Trace("FieldFieldShipGraph: Building exterior graph for worldspace")
     
     ; Clear existing exterior graph
     ExteriorNodeIDs = new Int[0]

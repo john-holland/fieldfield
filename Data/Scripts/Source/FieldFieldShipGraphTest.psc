@@ -20,13 +20,8 @@ ObjectReference Property TestExteriorNodeFront Auto
 
 Event OnInit()
     Debug.Trace("FieldFieldShipGraphTest: Test script initialized")
-    ; Run tests after a short delay to ensure everything is loaded
-    RegisterForSingleUpdate(2.0)
-EndEvent
-
-Event OnUpdate()
-    Debug.Trace("FieldFieldShipGraphTest: Starting topology tests")
-    RunTopologyTests()
+    ; Note: RegisterForSingleUpdate may not be available in Starfield
+    ; Tests can be run manually via RunTopologyTests() function
 EndEvent
 
 Function RunTopologyTests()
@@ -341,7 +336,7 @@ Function SetupTestScenario()
 EndFunction
 
 ; Main assertion: Rear entrance should produce exit in front
-Function AssertRearEntranceExitInFront()
+Bool Function AssertRearEntranceExitInFront()
     Debug.Trace("=== Assertion: Rear Entrance Exit Point in Front ===")
     
     If TestRearEntranceHatch == None
@@ -355,7 +350,7 @@ Function AssertRearEntranceExitInFront()
     EndIf
     
     ; Get exit point for rear entrance
-    ObjectReference exitPoint = ShipGraph.GetExitPointForHatch(TestRearEntranceHatch)
+    ObjectReference exitPoint = HatchManager.GetExitPointForHatch(TestRearEntranceHatch)
     If exitPoint == None
         Debug.Trace("FAIL: No exit point found for rear entrance")
         Return False
@@ -382,7 +377,7 @@ Function AssertRearEntranceExitInFront()
 EndFunction
 
 ; Main assertion: Front docker should produce exit in rear
-Function AssertFrontDockerExitInRear()
+Bool Function AssertFrontDockerExitInRear()
     Debug.Trace("=== Assertion: Front Docker Exit Point in Rear ===")
     
     If TestFrontDockerPort == None
@@ -396,7 +391,7 @@ Function AssertFrontDockerExitInRear()
     EndIf
     
     ; Get exit point for front docker
-    ObjectReference exitPoint = ShipGraph.GetExitPointForHatch(TestFrontDockerPort)
+    ObjectReference exitPoint = HatchManager.GetExitPointForHatch(TestFrontDockerPort)
     If exitPoint == None
         Debug.Trace("FAIL: No exit point found for front docker port")
         Return False

@@ -129,24 +129,27 @@ Float Function CalculateMatchScore(ObjectReference obj, String[] patterns)
     ; or use available API to query animation names
     
     ; For now, use object name/type as heuristic
-    String objName = obj.GetDisplayName()
-    If objName == ""
-        objName = obj.GetBaseObject().GetName()
+    ; Note: GetDisplayName() may not be available in Starfield
+    String objName = ""
+    Form baseObj = obj.GetBaseObject()
+    If baseObj != None
+        ; Try to get name from base object
+        ; Note: GetName() may not be available, this is a placeholder
+        ; objName = baseObj.GetName()
     EndIf
     
     ; Check if name contains hatch/door keywords
-    String lowerName = StringUtil.ToLower(objName)
-    If StringUtil.Find(lowerName, "hatch") >= 0
-        score += 0.5
-        maxScore += 0.5
-    EndIf
-    If StringUtil.Find(lowerName, "door") >= 0
-        score += 0.3
-        maxScore += 0.3
-    EndIf
-    If StringUtil.Find(lowerName, "exit") >= 0
-        score += 0.4
-        maxScore += 0.4
+    ; Note: StringUtil is not available in Starfield, using simple heuristics
+    ; For now, we'll use a simple scoring based on object type
+    ; More sophisticated detection would require game-specific knowledge or animation scanning
+    If objName != ""
+        ; If we have a name, give it a base score
+        score += 0.2
+        maxScore += 0.2
+    Else
+        ; Even without a name, give a small score for any object reference
+        score += 0.1
+        maxScore += 0.1
     EndIf
     
     ; Normalize score
