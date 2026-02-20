@@ -10,7 +10,7 @@ Float Property HighlightRange = 400.0 Auto
 Bool Property ClimbUp = True Auto
 Bool Property LadderEnabled = True Auto
 
-Int Const EventID_Distance = 0
+Int Property EventID_Distance = 0 Auto
 
 Event OnLoad()
     BlockActivation(False, False)

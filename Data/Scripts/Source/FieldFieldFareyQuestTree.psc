@@ -58,12 +58,12 @@ Function RegisterQuestWithInterval(Quest q, Int leftN, Int leftD, Int rightN, In
     RightDen = AppendInt(RightDen, rightD)
 EndFunction
 
-; Add newQuest as a child of parent (insert as rightmost child). Assigns interval inside parent.
-Function AddChild(Quest parent, Quest newQuest)
-    If parent == None || newQuest == None || RegisteredQuests == None
+; Add newQuest as a child of akParent (insert as rightmost child). Assigns interval inside parent.
+Function AddChild(Quest akParent, Quest newQuest)
+    If akParent == None || newQuest == None || RegisteredQuests == None
         Return
     EndIf
-    Int pIdx = GetQuestIndex(parent)
+    Int pIdx = GetQuestIndex(akParent)
     If pIdx < 0
         Debug.Trace("FieldFieldFareyQuestTree: Parent not registered")
         Return
@@ -76,7 +76,7 @@ Function AddChild(Quest parent, Quest newQuest)
     Int pLden = LeftDen[pIdx]
     Int pRnum = RightNum[pIdx]
     Int pRden = RightDen[pIdx]
-    ; Find rightmost child of parent (largest right bound)
+    ; Find rightmost child of akParent (largest right bound)
     Int cRnum = pLnum
     Int cRden = pLden
     Int i = 0
@@ -95,7 +95,7 @@ Function AddChild(Quest parent, Quest newQuest)
     Int newLeftNum = cRnum + pRnum
     Int newLeftDen = cRden + pRden
     RegisterQuestWithInterval(newQuest, newLeftNum, newLeftDen, pRnum, pRden)
-    Debug.Trace("FieldFieldFareyQuestTree: Added child " + newQuest + " under " + parent)
+    Debug.Trace("FieldFieldFareyQuestTree: Added child " + newQuest + " under " + akParent)
 EndFunction
 
 ; Remove quest from the active tree (e.g. when completed). Quest stays in log; GetChildQuests excludes it.
@@ -110,13 +110,13 @@ Function RemoveFromTree(Quest q)
     Debug.Trace("FieldFieldFareyQuestTree: Removed from tree (completed) " + q)
 EndFunction
 
-; Get all quests whose interval is strictly contained in parent's. Fills ChildQuestsResultFormList; use result immediately.
-FormList Function GetChildQuests(Quest parent)
+; Get all quests whose interval is strictly contained in akParent's. Fills ChildQuestsResultFormList; use result immediately.
+FormList Function GetChildQuests(Quest akParent)
     If ChildQuestsResultFormList == None
         Return None
     EndIf
     ChildQuestsResultFormList.Revert()
-    Int pIdx = GetQuestIndex(parent)
+    Int pIdx = GetQuestIndex(akParent)
     If pIdx < 0
         Return ChildQuestsResultFormList
     EndIf

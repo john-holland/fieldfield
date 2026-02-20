@@ -37,7 +37,23 @@ FieldField mod - [describe what your mod does here].
 Papyrus source scripts are located in `Data/Scripts/Source/`
 Compiled scripts should be placed in `Data/Scripts/`
 
-**Before compiling**: Extract the game’s base script sources from `Starfield/Tools/ContentResources.zip` into your project or the compiler’s search path. The compiler needs these to resolve vanilla types (`Game`, `ObjectReference`, `Quest`, etc.).
+**Before compiling**: Extract the game’s base script sources from `Starfield/Tools/ContentResources.zip` into your project or the compiler’s search path. The compiler needs these to resolve vanilla types (`Game`, `ObjectReference`, `Quest`, etc.). Extract the `Scripts` folder from the archive into `Data/Scripts/Source/Base` (or set the compiler import path to that folder).
+
+#### External compilers (command-line)
+
+Two wrapper scripts in `Data/Scripts/Source/` let you compile without opening the Creation Kit:
+
+| Wrapper | Compiler | When to use |
+|---------|----------|-------------|
+| **compile_ck.cmd** | Creation Kit `PapyrusCompiler.exe` | **Recommended for release.** Same compiler as the CK; supports all Starfield features (e.g. GUARD). Requires Creation Kit installed (`Tools/Papyrus Compiler/`). |
+| **compile_caprica.cmd** | [Caprica](https://github.com/Orvid/Caprica) | Quick CLI/CI; no CK required. Does not support GUARD; use CK compiler if your scripts use GUARD or you want byte-for-byte CK behavior. Put `caprica.exe` in `Data/Scripts/Source/` or set `CAPRICA_PATH`. |
+
+**Usage**: Run the CMD from `Data/Scripts/Source/`. You can pass a script name (e.g. `compile_ck.cmd FieldFieldRingBuilderQuest.psc`) or run with no args and enter:
+- **script name** – compile that script
+- **FIELD** – compile only `FieldField*.psc` (mod scripts; avoids base-game path/flag issues)
+- **ALL** – compile the whole Source tree (CK: namespaced Base scripts may warn; Caprica: some base scripts use flags like `protected`/`selfonly` that Caprica doesn’t support, so use FIELD for a clean mod-only build)
+
+Edit the path block at the top of each CMD to set `GAMEROOT` to your Starfield install (e.g. `d:\SteamLibrary\steamapps\common\Starfield`).
 
 ### Creating the Plugin
 

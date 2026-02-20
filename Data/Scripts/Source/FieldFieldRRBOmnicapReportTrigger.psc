@@ -1,4 +1,4 @@
-Scriptname FieldFieldRingBuilderOmnicapReportTrigger extends ObjectReference
+Scriptname FieldFieldRRBOmnicapReportTrigger extends ObjectReference
 
 ; Place in omnicap (or any menu/terminal). When player activates, runs the Ring Builder quest's omnicap report (trace + optional message).
 
@@ -12,5 +12,5 @@ Event OnActivate(ObjectReference akActionRef)
         Return
     EndIf
     RingBuilderQuest.RunOmnicapReport()
-    Debug.Trace("FieldFieldRingBuilderOmnicapReportTrigger: Report run")
+    Debug.Trace("FieldFieldRRBOmnicapReportTrigger: Report run")
 EndEvent

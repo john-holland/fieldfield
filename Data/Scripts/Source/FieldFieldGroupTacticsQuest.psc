@@ -25,14 +25,14 @@ Int[] CounterMax
 Bool Property IsSnowfieldMode = False Auto Hidden
 
 ; Ability indices for serialization
-Int Const ABILITY_ATTACK = 0
-Int Const ABILITY_HEAL = 1
-Int Const ABILITY_CALL_TO_ARMS = 2
-Int Const ABILITY_FORCE_POWER = 3
-Int Const ABILITY_ROBOT_POWER_ATTACK = 4
-Int Const ABILITY_APOLOGIZE = 5
-Int Const ABILITY_GUARD = 6
-Int Const ABILITY_CALL_FOR_HELP = 7
+Int Property ABILITY_ATTACK = 0 Auto
+Int Property ABILITY_HEAL = 1 Auto
+Int Property ABILITY_CALL_TO_ARMS = 2 Auto
+Int Property ABILITY_FORCE_POWER = 3 Auto
+Int Property ABILITY_ROBOT_POWER_ATTACK = 4 Auto
+Int Property ABILITY_APOLOGIZE = 5 Auto
+Int Property ABILITY_GUARD = 6 Auto
+Int Property ABILITY_CALL_FOR_HELP = 7 Auto
 
 Event OnInit()
     Debug.Trace("FieldFieldGroupTacticsQuest: Initialized")

@@ -34,15 +34,15 @@ Function EnsureIndexAndGraphForCurrentCell()
     If player == None
         Return
     EndIf
-    Cell cell = player.GetParentCell()
-    If cell == None
+    Cell playerCell = player.GetParentCell()
+    If playerCell == None
         Return
     EndIf
     If Index == None || Pathfinding == None
         Return
     EndIf
-    If !Index.IsIndexValidForCell(cell)
-        Index.BuildIndexForCell(cell)
+    If !Index.IsIndexValidForCell(playerCell)
+        Index.BuildIndexForCell(playerCell)
         Pathfinding.BuildGraphFromIndex()
     EndIf
 EndFunction

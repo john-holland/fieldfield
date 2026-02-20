@@ -9,7 +9,7 @@ RefCollectionAlias Property PlacedQuestBuildingsAlias Auto
 RefCollectionAlias Property PlacedBuildingsAlias Auto
 
 ; Format version for validator
-Int Property ExportFormatVersion = 1 Auto Const
+Int Property ExportFormatVersion = 1 Auto
 
 String Function BuildStripExportString()
     If RingBuilderQuest == None

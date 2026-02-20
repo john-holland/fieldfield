@@ -93,15 +93,10 @@ Form Function PickFormToPlace(FormList list)
     While attempts < size * 2
         Int idx = Utility.RandomInt(0, size - 1)
         Form f = list.GetAt(idx)
-        If f == None
-            attempts += 1
-            Continue
+        If f != None && (!IsQuestUnique(f) || !AlreadyPlacedQuestBuilding(f))
+            Return f
         EndIf
-        If IsQuestUnique(f) && AlreadyPlacedQuestBuilding(f)
-            attempts += 1
-            Continue
-        EndIf
-        Return f
+        attempts += 1
     EndWhile
     Return None
 EndFunction

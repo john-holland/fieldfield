@@ -63,29 +63,5 @@ Function TriggerBoundaryReturn()
     BoundaryTriggered = False
 EndFunction
 
-; Optional: poll distance and trigger when player exceeds BoundaryDistance (use sparingly)
-Event OnLoad()
-    If BoundaryRef == None && ReturnToRef != None
-        RegisterForSingleUpdate(2.0)
-    EndIf
-EndEvent
-
-Event OnUpdate()
-    If BoundaryRef != None
-        Return
-    EndIf
-    Actor player = Game.GetPlayer()
-    If player == None
-        RegisterForSingleUpdate(2.0)
-        Return
-    EndIf
-    Float dist = GetDistance(player)
-    If dist >= BoundaryDistance
-        TriggerBoundaryReturn()
-    EndIf
-    RegisterForSingleUpdate(2.0)
-EndEvent
-
-Event OnUnload()
-    UnregisterForUpdate()
-EndEvent
+; Distance-based boundary requires a separate trigger (BoundaryRef). Starfield Papyrus does not support
+; RegisterForSingleUpdate/OnUpdate in non-native scripts; set BoundaryRef in CK for boundary detection.

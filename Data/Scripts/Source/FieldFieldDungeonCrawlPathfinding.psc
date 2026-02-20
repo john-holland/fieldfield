@@ -120,14 +120,14 @@ Int[] Function FindPath(Int fromNode, Int toNode)
         Return single
     EndIf
 
-    ; parent[nodeId] = previous node id for path reconstruction
-    Int[] parent = new Int[NodeCount]
+    ; parentNode[nodeId] = previous node id for path reconstruction
+    Int[] parentNode = new Int[NodeCount]
     Int p = 0
     While p < NodeCount
-        parent[p] = -1
+        parentNode[p] = -1
         p += 1
     EndWhile
-    parent[fromNode] = fromNode
+    parentNode[fromNode] = fromNode
 
     ; BFS queue: use array + read index
     Int[] queue = new Int[0]
@@ -141,7 +141,6 @@ Int[] Function FindPath(Int fromNode, Int toNode)
         If current == toNode
             found = True
             readIndex = queue.Length
-            ExitWhile
         EndIf
 
         ; Neighbors: all edges from current
@@ -149,8 +148,8 @@ Int[] Function FindPath(Int fromNode, Int toNode)
         While e < EdgeFrom.Length
             If EdgeFrom[e] == current
                 Int neighbor = EdgeTo[e]
-                If parent[neighbor] < 0
-                    parent[neighbor] = current
+                If parentNode[neighbor] < 0
+                    parentNode[neighbor] = current
                     queue.Add(neighbor)
                 EndIf
             EndIf
@@ -170,7 +169,7 @@ Int[] Function FindPath(Int fromNode, Int toNode)
         If node == fromNode
             node = -1
         Else
-            node = parent[node]
+            node = parentNode[node]
         EndIf
     EndWhile
 

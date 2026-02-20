@@ -13,8 +13,8 @@ Float Property DefaultCooldown = 10.0 Auto
 Float Property GuardUpdateInterval = 0.8 Auto
 
 ; Execute ability by index. Caster = cadre member who activated.
-Function ExecuteAbility(Int characterIndex, Int abilityIndex, Actor caster, FieldFieldGroupTacticsQuest quest)
-    TacticsQuest = quest
+Function ExecuteAbility(Int characterIndex, Int abilityIndex, Actor caster, FieldFieldGroupTacticsQuest akTacticsQuest)
+    TacticsQuest = akTacticsQuest
     If caster == None || TacticsQuest == None
         Return
     EndIf
@@ -86,9 +86,9 @@ Function ExecuteForcePower(Actor caster)
     Actor target = player.GetCombatTarget()
     If ForcePowerSpell != None
         If target != None
-            caster.Cast(ForcePowerSpell as Form, target)
+            ForcePowerSpell.Cast(caster, target)
         Else
-            caster.Cast(ForcePowerSpell as Form, caster)
+            ForcePowerSpell.Cast(caster, caster)
         EndIf
     EndIf
     Debug.Notification("Force power!")
