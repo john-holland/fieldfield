@@ -17,11 +17,17 @@ Event OnInit()
     InitializeHatchManager()
     InitializeHatchScanner()
     InitializeShipGraph()
+    UpdateShipGraphContext()
     
     ; Register for player location change events
     RegisterForPlayerLocationChange()
     
     Debug.Notification("FieldField mod initialized!")
+EndEvent
+
+Event OnPlayerLoadGame()
+    Debug.Trace("FieldField: Save loaded, refreshing ship graph context")
+    UpdateShipGraphContext()
 EndEvent
 
 Function InitializeHatchManager()
@@ -73,20 +79,23 @@ EndFunction
 ; EndEvent
 
 Bool Function IsShipInterior(Location loc)
-    ; Determine if location is a ship interior
-    ; This is a placeholder - actual implementation depends on available game functions
-    If loc == None
+    Actor playerRef = Game.GetPlayer()
+    If playerRef == None
         Return False
     EndIf
-    
-    ; Check if location has ship-related keywords or properties
-    ; This may need to be adjusted based on actual Starfield API
-    Return False ; Placeholder
+
+    If playerRef.GetCurrentShipRef() == None
+        Return False
+    EndIf
+
+    Cell playerCell = playerRef.GetParentCell()
+    Return playerCell != None && playerCell.IsInterior()
 EndFunction
 
 Function ScanForHatches(Location loc)
     ; Trigger hatch scanning in the current location
     If HatchScanner != None && HatchManager != None
+        UpdateShipGraphContext()
         Debug.Trace("FieldField: Scanning for hatches in location: " + loc)
         HatchScanner.ScanLocationForHatches(loc)
     EndIf
@@ -94,6 +103,7 @@ EndFunction
 
 ; Property button function - scans current player location for hatches
 Function ScanCurrentLocation()
+    UpdateShipGraphContext()
     Location currentLoc = Game.GetPlayer().GetCurrentLocation()
     If currentLoc != None
         Debug.Trace("FieldField: Property button - Scanning current location: " + currentLoc)
@@ -111,4 +121,18 @@ Function ScanCurrentLocation()
             Debug.Notification("FieldField: No location available to scan")
         EndIf
     EndIf
+EndFunction
+
+Function UpdateShipGraphContext()
+    If ShipGraph == None
+        Return
+    EndIf
+
+    Actor playerRef = Game.GetPlayer()
+    If playerRef == None
+        Return
+    EndIf
+
+    Bool isInterior = IsShipInterior(playerRef.GetCurrentLocation())
+    ShipGraph.SetContext(isInterior)
 EndFunction

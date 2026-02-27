@@ -228,8 +228,12 @@ Function AssociateHatchToGraph(ObjectReference hatch, Bool isInterior)
     Int index = AssociatedHatches.Find(hatch)
     If index >= 0
         ; Update association
-        AssociatedNodeIDs[index] = nodeID
-        AssociatedIsInterior[index] = isInterior
+        If index < AssociatedNodeIDs.Length
+            AssociatedNodeIDs[index] = nodeID
+        EndIf
+        If index < AssociatedIsInterior.Length
+            AssociatedIsInterior[index] = isInterior
+        EndIf
     Else
         ; Add new association
         AssociatedHatches.Add(hatch)
@@ -248,7 +252,7 @@ Int Function GetCorrespondingNode(Int nodeID, Bool isInterior)
     ; Find hatches associated with this node
     Int i = 0
     While i < AssociatedHatches.Length
-        If AssociatedNodeIDs[i] == nodeID && AssociatedIsInterior[i] == isInterior
+        If i < AssociatedNodeIDs.Length && i < AssociatedIsInterior.Length && AssociatedNodeIDs[i] == nodeID && AssociatedIsInterior[i] == isInterior
             ; Find the hatch associated with this node
             ObjectReference hatch = AssociatedHatches[i]
             
@@ -287,13 +291,20 @@ ObjectReference Function PlaceExitPointForHatch(ObjectReference hatch, Bool isIn
     ; Check if exit point already exists
     Int index = HatchExitPointHatches.Find(hatch)
     If index >= 0
-        Return HatchExitPoints[index]
+        If index < HatchExitPoints.Length && HatchExitPoints[index] != None
+            Return HatchExitPoints[index]
+        EndIf
     EndIf
     
     ; Find associated node
     Int nodeIndex = AssociatedHatches.Find(hatch)
     If nodeIndex < 0
         Debug.Trace("FieldFieldShipGraph: Hatch not associated to graph: " + hatch)
+        Return None
+    EndIf
+
+    If nodeIndex >= AssociatedNodeIDs.Length || nodeIndex >= AssociatedIsInterior.Length
+        Debug.Trace("FieldFieldShipGraph: Hatch association is out of sync for " + hatch)
         Return None
     EndIf
     
@@ -309,6 +320,10 @@ ObjectReference Function PlaceExitPointForHatch(ObjectReference hatch, Bool isIn
     
     ; Get node marker position
     ObjectReference nodeMarker = GetNodeMarker(correspondingNodeID, !hatchIsInterior)
+    If nodeMarker == None
+        ; Fallback to same graph marker if opposite graph has no marker.
+        nodeMarker = GetNodeMarker(nodeID, hatchIsInterior)
+    EndIf
     If nodeMarker == None
         Debug.Trace("FieldFieldShipGraph: Could not get node marker for exit point")
         Return None
@@ -329,10 +344,29 @@ EndFunction
 
 ; Get exit point for hatch
 ObjectReference Function GetExitPointForHatch(ObjectReference hatch)
-    Int index = HatchExitPointHatches.Find(hatch)
-    If index >= 0
-        Return HatchExitPoints[index]
+    If hatch == None
+        Return None
     EndIf
+
+    Int index = HatchExitPointHatches.Find(hatch)
+    If index >= 0 && index < HatchExitPoints.Length
+        ObjectReference cachedExitPoint = HatchExitPoints[index]
+        If cachedExitPoint != None && !cachedExitPoint.IsDisabled()
+            Return cachedExitPoint
+        EndIf
+    EndIf
+
+    ; Try to place one if hatch is associated but no valid cached destination exists.
+    Int nodeIndex = AssociatedHatches.Find(hatch)
+    If nodeIndex >= 0 && nodeIndex < AssociatedIsInterior.Length
+        ObjectReference placedPoint = PlaceExitPointForHatch(hatch, AssociatedIsInterior[nodeIndex])
+        If placedPoint != None && !placedPoint.IsDisabled()
+            Return placedPoint
+        EndIf
+    EndIf
+
+    Debug.Trace("FieldFieldShipGraph: No valid exit point resolved for hatch " + hatch)
+
     Return None
 EndFunction
 
@@ -342,7 +376,9 @@ Function AutoPlaceExitPointsForHatches()
     
     Int i = 0
     While i < AssociatedHatches.Length
-        PlaceExitPointForHatch(AssociatedHatches[i], AssociatedIsInterior[i])
+        If i < AssociatedIsInterior.Length
+            PlaceExitPointForHatch(AssociatedHatches[i], AssociatedIsInterior[i])
+        EndIf
         i += 1
     EndWhile
 EndFunction
@@ -368,7 +404,7 @@ ObjectReference[] Function FindHatchesInRange(ObjectReference position, Float ra
     
     Int i = 0
     While i < AssociatedHatches.Length
-        If AssociatedIsInterior[i] == isInterior
+        If i < AssociatedIsInterior.Length && AssociatedIsInterior[i] == isInterior
             ObjectReference hatch = AssociatedHatches[i]
             If hatch != None && position.GetDistance(hatch) <= range
                 hatchesInRange.Add(hatch)
