@@ -22,7 +22,8 @@ Function ExploreObjectProperties(ObjectReference obj)
     
     Debug.Trace("=== FieldFieldDataExplorer: Exploring Object Properties ===")
     Debug.Trace("Object: " + obj)
-    Debug.Trace("Display Name: " + obj.GetDisplayName())
+    ; Note: GetDisplayName() may not be available in Starfield
+    ; Debug.Trace("Display Name: " + obj.GetDisplayName())
     Debug.Trace("Base Object: " + obj.GetBaseObject())
     Debug.Trace("Position X: " + obj.GetPositionX())
     Debug.Trace("Position Y: " + obj.GetPositionY())
@@ -91,7 +92,8 @@ Function ExploreEngineData()
     EndIf
     
     ; Test form/reference data access
-    Debug.Trace("Game Version: " + Game.GetVersion())
+    ; Note: Game.GetVersion() may not be available in Starfield
+    ; Debug.Trace("Game Version: " + Game.GetVersion())
     
     Debug.Trace("===========================================================")
 EndFunction
@@ -103,14 +105,14 @@ Function TestContextDetection()
     Actor player = Game.GetPlayer()
     If player != None
         Location loc = player.GetCurrentLocation()
-        Cell cell = player.GetParentCell()
+        Cell playerCell = player.GetParentCell()
         
         Debug.Trace("Player Location: " + loc)
-        Debug.Trace("Player Cell: " + cell)
+        Debug.Trace("Player Cell: " + playerCell)
         
         ; Try to determine if in ship interior
         ; This would need actual game-specific checks
-        Bool isInterior = cell != None && cell.IsInterior()
+        Bool isInterior = playerCell != None && playerCell.IsInterior()
         Debug.Trace("Is Interior Cell: " + isInterior)
     EndIf
     

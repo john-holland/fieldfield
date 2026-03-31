@@ -45,6 +45,10 @@ Function RegisterHatch(ObjectReference hatch)
     ; Associate hatch to graph and place exit point
     If ShipGraph != None
         Bool isInterior = ShipGraph.GetContext() == 1
+        Cell hatchCell = hatch.GetParentCell()
+        If hatchCell != None && hatchCell.IsInterior()
+            isInterior = True
+        EndIf
         ShipGraph.AssociateHatchToGraph(hatch, isInterior)
         
         ; Automatically place exit point at corresponding graph node
@@ -83,20 +87,55 @@ EndFunction
 ; Get exit point for a hatch
 ObjectReference Function GetExitPointForHatch(ObjectReference hatch)
     If hatch == None
+        Debug.Trace("FieldFieldHatchManager: GetExitPointForHatch called with None hatch")
         Return None
     EndIf
-    
+
+    If !IsHatchRegistered(hatch)
+        RegisterHatch(hatch)
+    EndIf
+
     ; First check if ShipGraph has an auto-placed exit point
     If ShipGraph != None
         ObjectReference exitPoint = ShipGraph.GetExitPointForHatch(hatch)
-        If exitPoint != None
+        If IsValidExitPoint(exitPoint, hatch)
             Return exitPoint
         EndIf
+
+        ; If none is cached yet, attempt placement now.
+        Bool isInterior = ShipGraph.GetContext() == 1
+        Cell hatchCell = hatch.GetParentCell()
+        If hatchCell != None && hatchCell.IsInterior()
+            isInterior = True
+        EndIf
+
+        exitPoint = ShipGraph.PlaceExitPointForHatch(hatch, isInterior)
+        If IsValidExitPoint(exitPoint, hatch)
+            RegisterExitPoint(exitPoint)
+            Return exitPoint
+        EndIf
+
+        Debug.Trace("FieldFieldHatchManager: Could not resolve valid exit point for hatch " + hatch)
+    Else
+        Debug.Trace("FieldFieldHatchManager: ShipGraph not set, cannot resolve hatch exit for " + hatch)
     EndIf
     
     ; Check if hatch has a manually configured exit point
     ; This would be set via script properties on FieldFieldHatchRef
     Return None
+EndFunction
+
+Bool Function IsValidExitPoint(ObjectReference exitPoint, ObjectReference hatch)
+    If exitPoint == None
+        Return False
+    EndIf
+
+    If exitPoint.IsDisabled()
+        Debug.Trace("FieldFieldHatchManager: Exit point disabled for hatch " + hatch)
+        Return False
+    EndIf
+
+    Return True
 EndFunction
 
 ; Place exit points for all registered hatches

@@ -19,32 +19,42 @@ FieldFieldAnimationConfig Property AnimationConfig Auto
 
 Bool IsOpen = False
 Bool IsAnimating = False
+Bool IsTransitionLocked = False
 
 Event OnActivate(ObjectReference akActionRef)
     If akActionRef != Game.GetPlayer()
         Return
     EndIf
     
+    If IsAnimating || IsTransitionLocked
+        Return
+    EndIf
+
     ; Check if player is in ship vs. on land
     Bool inShip = IsPlayerInShip()
     
-    If inShip
-        ; Normal hatch behavior (exit to space/land)
-        HandleNormalExit()
-    Else
-        ; Teleport to configured destination
+    ; Use graph teleport when player is in a ship interior and space-exit checks pass.
+    If inShip && CanExitShipToSpace()
         HandleTeleport()
+    Else
+        ; Fall back to default hatch behavior.
+        HandleNormalExit()
     EndIf
 EndEvent
 
 Bool Function IsPlayerInShip()
-    ; Determine if player is in a ship interior
-    ; This is a placeholder - actual implementation depends on available game functions
-    Location playerLoc = Game.GetPlayer().GetCurrentLocation()
-    
-    ; Check location properties or keywords
-    ; May need to check cell type or other indicators
-    Return False ; Placeholder
+    Actor playerRef = Game.GetPlayer()
+    If playerRef == None
+        Return False
+    EndIf
+
+    SpaceshipReference currentShip = playerRef.GetCurrentShipRef()
+    If currentShip == None
+        Return False
+    EndIf
+
+    Cell playerCell = playerRef.GetParentCell()
+    Return playerCell != None && playerCell.IsInterior()
 EndFunction
 
 Function HandleNormalExit()
@@ -60,15 +70,62 @@ Function HandleNormalExit()
     ; This may need to call game functions or let default behavior occur
 EndFunction
 
+Bool Function CanExitShipToSpace()
+    Actor playerRef = Game.GetPlayer()
+    If playerRef == None
+        Return False
+    EndIf
+
+    SpaceshipReference currentShip = playerRef.GetCurrentShipRef()
+    If currentShip == None
+        Debug.Trace("FieldFieldHatchRef: Cannot exit to space - no current ship")
+        Return False
+    EndIf
+
+    If !playerRef.IsInSpace()
+        Debug.Trace("FieldFieldHatchRef: Cannot exit to space - player is not in space")
+        Return False
+    EndIf
+
+    If currentShip.IsLanded()
+        Debug.Trace("FieldFieldHatchRef: Cannot exit to space - ship is landed")
+        Return False
+    EndIf
+
+    If currentShip.IsInCombat()
+        Debug.Trace("FieldFieldHatchRef: Cannot exit to space - ship is in combat")
+        Return False
+    EndIf
+
+    If currentShip.IsExteriorLoadDoorInaccessible()
+        Debug.Trace("FieldFieldHatchRef: Cannot exit to space - exterior load door is inaccessible")
+        Return False
+    EndIf
+
+    Return True
+EndFunction
+
 Function HandleTeleport()
     ; Teleport to configured exit point
     Debug.Trace("FieldFieldHatchRef: Teleport behavior for " + Self)
+
+    If IsTransitionLocked
+        Debug.Trace("FieldFieldHatchRef: Transition already in progress for " + Self)
+        Return
+    EndIf
+
+    If !CanExitShipToSpace()
+        Return
+    EndIf
     
+    IsTransitionLocked = True
+
     ; Get exit point (auto-placed or manual)
     ObjectReference exitPoint = GetExitPoint()
     
-    If exitPoint == None
+    If !IsValidExitPoint(exitPoint)
         Debug.Notification("FieldField: No exit point configured for this hatch")
+        IsTransitionLocked = False
         Return
     EndIf
     
@@ -83,6 +140,7 @@ Function HandleTeleport()
     
     ; Play close animation at destination
     PlayCloseAnimation()
+    IsTransitionLocked = False
     
     Debug.Notification("FieldField: Teleported to exit point")
 EndFunction
@@ -98,6 +156,20 @@ ObjectReference Function GetExitPoint()
     
     ; Fall back to manually configured exit point
     Return ExitPointRef
+EndFunction
+
+Bool Function IsValidExitPoint(ObjectReference exitPoint)
+    If exitPoint == None
+        Debug.Trace("FieldFieldHatchRef: Exit point lookup returned None for " + Self)
+        Return False
+    EndIf
+
+    If exitPoint.IsDisabled()
+        Debug.Trace("FieldFieldHatchRef: Exit point is disabled for hatch " + Self)
+        Return False
+    EndIf
+
+    Return True
 EndFunction
 
 Function PlayOpenAnimation()
